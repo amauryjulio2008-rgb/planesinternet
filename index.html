@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Planes de Internet y Descuentos</title>
+  <style>
+    
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #e3f2fd;           
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;  
+      text-align: center;                  
+      color: #1c2e4a;
+    }
+
+    .tarjeta {
+      width: 92%;
+      max-width: 480px;
+      background: #ffffff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 28px rgba(21, 101, 192, 0.18);
+    }
+
+    .tarjeta h1 {
+      margin: 0;
+      padding: 22px 16px;
+      font-size: 1.45rem;
+      background-color: #1565c0;
+      color: #ffffff;
+    }
+
+    .contenido { padding: 22px; }
+
+    .saludo { font-size: 1.1rem; margin: 0 0 16px; }
+
+    table { width: 100%; border-collapse: collapse; margin-bottom: 18px; }
+
+    td {
+      padding: 11px 6px;
+      border-bottom: 1px solid #dde7f3;
+      text-align: center;
+    }
+
+    
+    .descuento-si {
+      color: #1e8e3e;
+      font-weight: bold;
+    }
+    .descuento-no { color: #6b7a90; }
+
+    .mensaje-descuento {
+      margin-bottom: 18px;
+      padding: 12px;
+      border-radius: 10px;
+      background-color: #e6f4ea;
+      color: #1e8e3e;
+      font-weight: bold;
+    }
+
+    .total {
+      font-size: 1.6rem;
+      font-weight: bold;
+      padding: 16px;
+      border-radius: 10px;
+      background-color: #1565c0;
+      color: #ffffff;
+    }
+
+    .error { padding: 28px; color: #c0392b; font-size: 1.05rem; }
+    .error-titulo { background-color: #c0392b !important; }
+  </style>
+</head>
+<body>
+
+<script>
+ 
+  var nombre = prompt("Ingrese el nombre del cliente:");
+  var tipoPlan = parseInt(prompt(
+    "Seleccione el tipo de plan:\n" +
+    "1 = Básico (10 Mbps)\n2 = Estándar (50 Mbps)\n3 = Premium (100 Mbps)"
+  ));
+  var meses = parseInt(prompt("Ingrese el número de meses que desea contratar:"));
+
+  if (nombre === null || nombre.trim() === "") {
+    nombre = "Cliente";
+  }
+
+  
+  var nombrePlan = "";
+  var valorMensual = 0;
+  var errores = "";
+
+  switch (tipoPlan) {
+    case 1:
+      nombrePlan = "Básico (10 Mbps)";
+      valorMensual = 40000;
+      break;
+    case 2:
+      nombrePlan = "Estándar (50 Mbps)";
+      valorMensual = 70000;
+      break;
+    case 3:
+      nombrePlan = "Premium (100 Mbps)";
+      valorMensual = 100000;
+      break;
+    default:
+      errores += "Plan no válido (debe ser 1, 2 o 3).<br>";
+  }
+
+  
+  if (isNaN(meses) || meses < 1) {
+    errores += "Número de meses no válido (debe ser un entero mayor o igual a 1).<br>";
+  }
+
+  
+  var subtotal = valorMensual * meses;
+  var porcentajeDescuento = 0;
+
+  if (meses >= 12) {
+    porcentajeDescuento = 0.20;
+  } else if (meses >= 6) {
+    porcentajeDescuento = 0.10;
+  } else {
+    porcentajeDescuento = 0;
+  }
+
+ 
+  var montoDescuento = subtotal * porcentajeDescuento;
+  var totalPagar = subtotal - montoDescuento;
+
+  
+  function formatoPesos(valor) {
+    return "$" + valor.toLocaleString("es-CO");
+  }
+
+  
+  if (errores === "") {
+    var hayDescuento = porcentajeDescuento > 0;
+
+    document.write('<div class="tarjeta">');
+    document.write('<h1>Planes de Internet</h1>');
+    document.write('<div class="contenido">');
+    document.write('<p class="saludo">Hola, <strong>' + nombre + '</strong></p>');
+
+    document.write('<table>');
+    document.write('<tr><td>Plan seleccionado</td><td><strong>' + nombrePlan + '</strong></td></tr>');
+    document.write('<tr><td>Valor mensual</td><td><strong>' + formatoPesos(valorMensual) + '</strong></td></tr>');
+    document.write('<tr><td>Meses contratados</td><td><strong>' + meses + '</strong></td></tr>');
+    document.write('<tr><td>Subtotal</td><td><strong>' + formatoPesos(subtotal) + '</strong></td></tr>');
+
+    if (hayDescuento) {
+      document.write('<tr><td>Descuento aplicado</td><td class="descuento-si">' +
+        (porcentajeDescuento * 100) + '% (-' + formatoPesos(montoDescuento) + ')</td></tr>');
+    } else {
+      document.write('<tr><td>Descuento aplicado</td><td class="descuento-no">Sin descuento</td></tr>');
+    }
+    document.write('</table>');
+
+    if (hayDescuento) {
+      document.write('<div class="mensaje-descuento">¡Felicitaciones! Ahorra ' +
+        formatoPesos(montoDescuento) + ' por su permanencia.</div>');
+    }
+
+    document.write('<div class="total">Total a pagar: ' + formatoPesos(totalPagar) + '</div>');
+    document.write('</div></div>');
+  } else {
+    document.write('<div class="tarjeta">');
+    document.write('<h1 class="error-titulo">Datos no válidos</h1>');
+    document.write('<div class="error">' + errores +
+      '<br>Recargue la página para intentarlo de nuevo.<br>' +
+      '<small>Si abrió el archivo desde una vista previa, descárguelo y ábralo en el navegador.</small></div>');
+    document.write('</div>');
+  }
+</script>
+
+</body>
+</html>
